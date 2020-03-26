@@ -229,66 +229,67 @@ while True:
     print(f"Gt = {Gt}")
     if Gp < Gt:
         print("Дисперсія однорідна (Gp < Gt)")
-        break
+        print("\n\nКритерій Стьюдента:")
+        Sb = sum(D) / N
+
+        Sbs = math.sqrt(Sb / (N * m))
+        print(f"S{{beta}} = {Sbs}")
+
+        beta = [
+            (y1_avg + y2_avg + y3_avg + y4_avg) / 4,
+            (-y1_avg - y2_avg + y3_avg + y4_avg) / 4,
+            (-y1_avg + y2_avg - y3_avg + y4_avg) / 4,
+            (-y1_avg + y2_avg + y3_avg - y4_avg) / 4,
+        ]
+
+        print(f"beta(i): {beta}")
+
+        t = []
+        for i in beta:
+            t.append(abs(i) / Sbs)
+        print(f"t(i): {t}")
+
+        f3 = f1 * f2
+        print(f"f3 = f1 * f2 = {f3}")
+        t_kr = t_table[f3]
+        print(f"t_kr = {t_kr}")
+        print(f"t(i) < t_kr: {[i for i in t if i<=t_kr]}")
+        print(f"\nНезначимі коефіцієнти: {[b[i] for i in range(len(t)) if t[i]<=t_kr]}")
+        print(f"Значимі коефіцієнти: {[b[i] for i in range(len(t)) if t[i]>t_kr]}")
+        t_final = list(filter(lambda x: x < t_kr, t))
+
+        for i in range(len(t)):
+            if t[i] <= t_kr:
+                b[i] = 0
+
+        y_t1 = b[0] + b[1] * x_matr[0][0] + b[2] * x_matr[1][0] + b[3] * x_matr[2][0]
+        y_t2 = b[0] + b[1] * x_matr[0][1] + b[2] * x_matr[1][1] + b[3] * x_matr[2][1]
+        y_t3 = b[0] + b[1] * x_matr[0][2] + b[2] * x_matr[1][2] + b[3] * x_matr[2][2]
+        y_t4 = b[0] + b[1] * x_matr[0][3] + b[2] * x_matr[1][3] + b[3] * x_matr[2][3]
+        y_t = [y_t1, y_t2, y_t3, y_t4]
+        print(f"y average(i): {y_t}")
+        print("\nКритерій Фішера:")
+        d = N - len(t_final)
+        f4 = N - d
+        print(f"f4 = N - d = {f4}")
+
+        fisher_sum = 0
+        for i in range(0, N):
+            fisher_sum += pow((y_t[i] - y_avg_arr[i]), 2)
+        D_ad = (m / (N - d)) * fisher_sum
+        Fp = D_ad / Sb
+        print(f"Fp = {Fp}")
+        Ft = F_table[f3 - 1][f4 - 1]
+        print(f"Ft = {Ft}")
+        if Ft > Fp:
+            print(f"Ft > Fp\nРівняння регресії адекватно оригіналу при рівні значимості {q}")
+            break
+        else:
+            print(f"Ft < Fp\nРівняння регресії неадекватно оригіналу при рівні значимості {q}, збільшуємо m, повторюємо операції")
+            m += 1
     else:
         print("Дисперсія неоднорідна (Gp > Gt), збільшуємо m, повторюємо операції")
         m += 1
+    
 
-
-print("\n\nКритерій Стьюдента:")
-Sb = sum(D) / N
-
-Sbs = math.sqrt(Sb / (N * m))
-print(f"S{{beta}} = {Sbs}")
-
-beta = [
-    (y1_avg + y2_avg + y3_avg + y4_avg) / 4,
-    (-y1_avg - y2_avg + y3_avg + y4_avg) / 4,
-    (-y1_avg + y2_avg - y3_avg + y4_avg) / 4,
-    (-y1_avg + y2_avg + y3_avg - y4_avg) / 4,
-]
-
-print(f"beta(i): {beta}")
-
-t = []
-for i in beta:
-    t.append(abs(i) / Sbs)
-print(f"t(i): {t}")
-
-f3 = f1 * f2
-print(f"f3 = f1 * f2 = {f3}")
-t_kr = t_table[f3]
-print(f"t_kr = {t_kr}")
-print(f"t(i) < t_kr: {[i for i in t if i<=t_kr]}")
-print(f"\nНезначимі коефіцієнти: {[b[i] for i in range(len(t)) if t[i]<=t_kr]}")
-print(f"Значимі коефіцієнти: {[b[i] for i in range(len(t)) if t[i]>t_kr]}")
-t_final = list(filter(lambda x: x < t_kr, t))
-
-for i in range(len(t)):
-    if t[i] <= t_kr:
-        b[i] = 0
-
-y_t1 = b[0] + b[1] * x_matr[0][0] + b[2] * x_matr[1][0] + b[3] * x_matr[2][0]
-y_t2 = b[0] + b[1] * x_matr[0][1] + b[2] * x_matr[1][1] + b[3] * x_matr[2][1]
-y_t3 = b[0] + b[1] * x_matr[0][2] + b[2] * x_matr[1][2] + b[3] * x_matr[2][2]
-y_t4 = b[0] + b[1] * x_matr[0][3] + b[2] * x_matr[1][3] + b[3] * x_matr[2][3]
-y_t = [y_t1, y_t2, y_t3, y_t4]
-print(f"y average(i): {y_t}")
-print("\nКритерій Фішера:")
-d = N - len(t_final)
-f4 = N - d
-print(f"f4 = N - d = {f4}")
-
-fisher_sum = 0
-for i in range(0, N):
-    fisher_sum += pow((y_t[i] - y_avg_arr[i]), 2)
-D_ad = (m / (N - d)) * fisher_sum
-Fp = D_ad / Sb
-print(f"Fp = {Fp}")
-Ft = F_table[f3 - 1][f4 - 1]
-print(f"Ft = {Ft}")
-if Ft > Fp:
-    print(f"Ft > Fp\nРівняння регресії адекватно оригіналу при рівні значимості {q}")
-else:
-    print(f"Ft < Fp\nРівняння регресії неадекватно оригіналу при рівні значимості {q}")
 
