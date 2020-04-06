@@ -42,9 +42,9 @@ def cycle_printer(arr):
     for i in arr: print(i)
 
 
-x1 = [-5, 15]
-x2 = [25, 45]
-x3 = [15, 45]
+x1 = [10, 40]
+x2 = [-30, 45]
+x3 = [-30, -10]
 
 m = 3
 N = 8
