@@ -110,20 +110,24 @@ while True:
         D.append(tmp)
 
     print(D)
-
-    Gp = max(D) / sum(D)
-    Gt = G_table[f2 - 2][f1 - 1] * 0.0001
-
-    print("Однорідність дисперсії (критерій Кохрена): ")
-    print(f"Gp = {Gp}")
-    print(f"Gt = {Gt}")
-    if Gp < Gt:
+    def dispersion_check(D):
+        
+        Gp = max(D) / sum(D)
+        Gt = G_table[f2 - 2][f1 - 1] * 0.0001
+        print("Однорідність дисперсії (критерій Кохрена): ")
+        print(f"Gp = {Gp}")
+        print(f"Gt = {Gt}")
+        if Gp < Gt:
+            return True
+        else:
+            return False
+            
+    if dispersion_check(D):
         print("Дисперсія однорідна (Gp < Gt)")
         break
     else:
         print("Дисперсія неоднорідна (Gp > Gt), збільшуємо m, повторюємо операції")
         m += 1
-
 Sb = sum(D) / N
 Sbs = Sb / (N * m)
 
@@ -136,31 +140,32 @@ beta = [(y_regr[0] + y_regr[1] + y_regr[2] + y_regr[3] + y_regr[4] + y_regr[5] +
         (y_regr[0] - y_regr[1] - y_regr[2] + y_regr[3] + y_regr[4] - y_regr[5] - y_regr[6] + y_regr[7]) / N,
         (-y_regr[0] + y_regr[1] + y_regr[2] - y_regr[3] + y_regr[4] - y_regr[5] - y_regr[6] + y_regr[7]) / N]
 
-t = [abs(i) / Sbs for i in beta]
-
-t_kr = t_table[f3 - 1]
-
-print(t_kr)
-print(t)
-
-t_final = list(filter(lambda x: x > t_kr, t))
-f4 = N - len(t_final)
+def t_criterion(Sbs,beta,f3):
+    t = [abs(i) / Sbs for i in beta]
+    t_kr = t_table[f3 - 1]
+    print(t_kr)
+    print(t)
+    t_final = list(filter(lambda x: x > t_kr, t))
+    return t_final
+f4 = N - len(t_criterion(Sbs,beta,f3))
 print(f"\nЗначимі коефіцієнти: ")
-cycle_printer(t_final)
+cycle_printer(t_criterion(Sbs,beta,f3))
 print("\n")
 print(t)
-print(t_final)
+print(t_criterion(Sbs,beta,f3))
 print(beta)
+def Fisher_criterion():
+    fisher_sum = 0
+    for i in range(N):
+        fisher_sum += pow((t[i] - y_regr[i]), 2)
 
-fisher_sum = 0
-for i in range(N):
-    fisher_sum += pow((t[i] - y_regr[i]), 2)
-D_ad = (m / (f4)) * fisher_sum
-Fp = D_ad / Sb
-print(f"Fp = {Fp}")
-Ft = F_table[f3 - 1][f4 - 1]
-print(f"Ft = {Ft}")
-if Ft > Fp:
-    print(f"Ft > Fp\nРівняння регресії адекватно оригіналу при рівні значимості {q}")
-else:
-    print(f"Ft < Fp\nРівняння регресії неадекватно оригіналу при рівні значимості {q}")
+        D_ad = (m / (f4)) * fisher_sum
+        Fp = D_ad / Sb
+        print(f"Fp = {Fp}")
+        Ft = F_table[f3 - 1][f4 - 1]
+        print(f"Ft = {Ft}")
+        if Ft > Fp:
+            print(f"Ft > Fp\nРівняння регресії адекватно оригіналу при рівні значимості {q}")
+        else:
+            print(f"Ft < Fp\nРівняння регресії неадекватно оригіналу при рівні значимості {q}")
+Fisher_criterion()
