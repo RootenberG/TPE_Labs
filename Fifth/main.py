@@ -204,6 +204,7 @@ while not correct:
             [mx_i[8], a(9, 1), a(9, 2), a(9, 3), a(9, 4), a(9, 5), a(9, 6), a(9, 7), a(9, 8), a(9, 9), a(9, 10)],
             [mx_i[9], a(10, 1), a(10, 2), a(10, 3), a(10, 4), a(10, 5), a(10, 6), a(10, 7), a(10, 8), a(10, 9), a(10, 10)]
         ]
+        # массив known містить значення залежних змінних my та a1-a10 Які слугують лейблами для знаходження коефіцієнтів регресії
         known = [my, find_known(1), find_known(2), find_known(3), find_known(4), find_known(5), find_known(6), find_known(7),
                  find_known(8), find_known(9), find_known(10)]
 
